@@ -1,0 +1,58 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: create release
+
+jobs:
+  create-release:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: checkout docker/cli
+        uses: actions/checkout@v2
+        with:
+          repository: docker/cli
+          ref: v20.10.8
+          path: cli
+      - name: checkout docker-cli-windows
+        uses: actions/checkout@v2
+        with:
+          repository: ionash/docker-cli-windows
+          ref: main
+          path: docker-cli-windows
+      - name: copy files
+        run: cp -rf docker-cli-windows/scripts cli
+      - name: create builder
+        run: sudo docker buildx create --use
+      - name: build binary
+        working-directory: ./cli
+        run: sudo docker buildx bake --set binary.platform=windows/amd64
+      - name: change asset owner
+        working-directory: ./cli
+        run: sudo chown -R runner:docker build
+      - name: confirm build
+        working-directory: ./cli/build
+        run: ls
+      - name: create asset
+        working-directory: ./cli/build
+        run: zip docker-windows-amd64 *.*
+      - name: create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./cli/build/docker-windows-amd64.zip
+          asset_name: docker-windows-amd64.zip
+          asset_content_type: application/zip
