@@ -2,6 +2,8 @@ on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - '**/README.md'
 
 name: build test
 
@@ -23,6 +25,10 @@ jobs:
           path: docker-cli-windows
       - name: copy files
         run: cp -rf docker-cli-windows/scripts cli
+      - name: docker version
+        run: docker version
+      - name: docker info
+        run: docker info
       - name: create builder
         run: sudo docker buildx create --use
       - name: build binary
