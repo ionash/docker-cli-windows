@@ -1,14 +1,16 @@
 on:
-  push:
-    tags:
-      - 'v*'
+  pull_request:
+    branches:
+      - main
+    types: [closed]
     paths-ignore:
       - '**/README.md'
 
-name: create release
+name: merge job
 
 jobs:
-  create-release:
+  merge-job:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-20.04
     steps:
       - name: checkout docker/cli
@@ -40,25 +42,3 @@ jobs:
       - name: confirm build
         working-directory: ./cli/build
         run: ls
-      - name: create asset
-        working-directory: ./cli/build
-        run: zip docker-windows-amd64 *.*
-      - name: create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: upload release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./cli/build/docker-windows-amd64.zip
-          asset_name: docker-windows-amd64.zip
-          asset_content_type: application/zip
