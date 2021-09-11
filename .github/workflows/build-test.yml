@@ -15,6 +15,10 @@ jobs:
           repository: docker/cli
           ref: v20.10.8
           path: cli
+      - name: docker version
+        run: docker version
+      - name: docker info
+        run: docker info
 #      - name: checkout docker-cli-windows
 #        uses: actions/checkout@v2
 #        with:
