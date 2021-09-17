@@ -3,6 +3,10 @@ set -eu
 
 TARGET=${TARGET:-"build"}
 
+###GIT CONFIG###
+git config -l
+###GIT CONFIG###
+
 echo ###GIT DIFF###
 git diff
 echo ###GIT DIFF###
