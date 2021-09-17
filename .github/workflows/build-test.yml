@@ -11,8 +11,6 @@ jobs:
   build-test:
     runs-on: ubuntu-20.04
     steps:
-      - name: fix line endings
-        run: git config --global core.autocrlf input
       - name: checkout docker/cli
         uses: actions/checkout@v2
         with:
