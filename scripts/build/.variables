@@ -8,8 +8,9 @@ git config -l
 ###GIT CONFIG###
 
 echo ###GIT DIFF###
-# git diff
-git grep --cached -I $'\r'
+# git diff --name-only
+# git grep --cached -I $'\r'
+git diff --name-only
 echo ###GIT DIFF###
 
 PLATFORM=${PLATFORM:-}
