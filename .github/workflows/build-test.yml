@@ -24,7 +24,9 @@ jobs:
           ref: main
           path: docker-cli-windows
       - name: copy files
-        run: cp -rf docker-cli-windows/scripts cli
+        run: cp -rf docker-cli-windows/Dockerfile cli
+#      - name: copy files
+#        run: cp -rf docker-cli-windows/scripts cli
       - name: docker version
         run: docker version
       - name: docker info
